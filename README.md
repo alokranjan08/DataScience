@@ -1,1 +1,1 @@
-for VS CODE
+VS CODE
