@@ -32,3 +32,7 @@ This analysis shows how data science can assist in identifying critical factors 
 ## 👤 Author
 - **Name:** Alok Ranjan
 - **GitHub:** [@alokranjan08](https://github.com/alokranjan08)
+
+- How to Run Locally
+Clone the repository:
+git clone https://github.com/alokranjan08/DataScience.git
