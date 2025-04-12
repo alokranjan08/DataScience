@@ -10,9 +10,9 @@ This data science initiative will examine worldwide aviation accidents between *
 - **Duration:** 24 years (2000-2024)
 
 ## 🛠 Tools & Technologies
-- **Language:** Python
+- **Language:** Python, R
 - **IDE:** VS Code
-- **Libraries:** Pandas, NumPy, Matplotlib, Seaborn, SciPy
+- **Libraries:** Pandas, NumPy, Matplotlib, Tidyverse
 
 ## 🔍 Important Analyses Performed
 - Severity classification level
