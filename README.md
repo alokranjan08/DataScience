@@ -6,7 +6,7 @@ This data science initiative will examine worldwide aviation accidents between *
 ## 📊 Dataset
 - **Source:** Aviation crash report dataset
 - **Format:** CSV
-- **Total Records:** Approximately 5,000+
+- **Total Records:** Approximately 45,000+
 - **Duration:** 24 years (2000-2024)
 
 ## 🛠 Tools & Technologies
