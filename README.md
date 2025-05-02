@@ -12,7 +12,7 @@ This data science initiative will examine worldwide aviation accidents between *
 ## 🛠 Tools & Technologies
 - **Language:** R
 - **IDE:** VS Code, RStudio
-- **Libraries:** Tidyverse
+- **Libraries:** Tidyverse, dplyr
 
 ## 🔍 Important Analyses Performed
 - Severity classification level
