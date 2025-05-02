@@ -1,7 +1,7 @@
-# ✈️ Aviation Accident Analysis Project
+# ✈️ Aviation Incidents in US
 
 ## Project Overview
-This data science initiative will examine worldwide aviation accidents between **01-01-2000 and 01-01-2024**. Using actual-world datasets, we hope to draw significant insights into **severity of accidents**, **fatality rates**, and **aircraft types** and find significant patterns that can help in risk avoidance.
+This data science initiative will examine worldwide aviation accidents between **01-01-2000 and 01-01-2025**. Using actual-world datasets, we hope to draw significant insights into **severity of accidents**, **fatality rates**, and **aircraft types** and find significant patterns that can help in risk avoidance.
 
 ## 📊 Dataset
 - **Source:** Aviation crash report dataset
@@ -10,9 +10,9 @@ This data science initiative will examine worldwide aviation accidents between *
 - **Duration:** 24 years (2000-2024)
 
 ## 🛠 Tools & Technologies
-- **Language:** Python, R
-- **IDE:** VS Code
-- **Libraries:** Pandas, NumPy, Matplotlib, Tidyverse
+- **Language:** R
+- **IDE:** VS Code, RStudio
+- **Libraries:** Tidyverse
 
 ## 🔍 Important Analyses Performed
 - Severity classification level
