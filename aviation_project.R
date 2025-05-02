@@ -5,7 +5,7 @@ library(dplyr)
 
 # Load the datasets
 crash_data <- read_csv("C:/PaNDa/CAP_482/Project_DataSets/aviation.csv")
-
+View(crash_data)
 # Missing values 
 colSums(is.na(crash_data))
 # Remove columns with more than 50% missing values
@@ -146,7 +146,7 @@ deadliest_years <- crash_data %>%
   head(5)
 cat("Top 5 deadliest years for aviation accidents:\n")
 print(deadliest_years)
-
+View(crash_data)
 
 #-------------------------------- Feature Engineering ---------------------------------
 
@@ -168,11 +168,11 @@ View(crash_data)
 #---------------------------------- Hypothesis Testing and Advanced Insights ---------------------------------
 
 # Q16. Does the time of year affect the number of aviation accidents?
-crash_data$EventDate <- as.numeric(format(as.Date(crash_data$EventDate, format="%Y-%m-%d"), "%m"))
+crash_data$EventMonth <- as.numeric(format(as.Date(crash_data$EventDate, format="%Y-%m-%d"), "%m"))
 accidents_by_month <- crash_data %>%
-  group_by(EventDate) %>%
+  group_by(EventMonth) %>%
   summarise(Total_Incidents = n()) %>%
-  arrange(EventDate)
+  arrange(EventMonth)
 cat("Accidents by month:\n")
 print(accidents_by_month)
 
@@ -202,3 +202,188 @@ aviation_airport <- crash_data %>%
   arrange(desc(Total_Fatalities))
 cat("Fatality rate at airports:\n")
 print(aviation_airport)
+
+#---------------------------------- Visualization ---------------------------------
+
+# Q20. How have aviation incidents changed over the years.
+ggplot(accident_rates_by_year, aes(x = Year, y = n)) +
+  geom_line(color = "steelblue", size = 1) +
+  geom_point(color = "darkred", size = 2) +
+  labs(title = "Trend of Aviation Incidents Over the Years",
+       x = "Year", y = "Incident Count") +
+  theme_minimal()
+View(crash_data)
+
+# Q21. What is the distribution of FatalityRate across AirCraftCategory?
+ggplot(crash_data, aes(x = FatalityRate, fill = AirCraftCategory)) +
+  geom_histogram(binwidth = 5, position = "identity", alpha = 0.7) +
+  labs(title = "Distribution of Fatality Rate by Aircraft Category",
+       x = "Fatality Rate (%)", y = "Count") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3")
+
+# Q22. How does the number of incidents vary by state?
+ggplot(accidents_per_state, aes(x = reorder(State, -Total_Incidents), y = Total_Incidents)) +
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.7) +
+  coord_flip() +  # Rotate for better readability
+  labs(title = "Number of Aviation Incidents by State",
+       x = "State", y = "Incident Count") +
+  theme_minimal()
+
+# Q23. What are the monthly patterns of aviation incidents?
+crash_data$MonthName <- month.name[as.integer(crash_data$EventMonth)]
+ggplot(crash_data, aes(x = factor(MonthName, levels = month.name))) +
+  geom_bar(fill = "purple") +
+  labs(title = "Monthly Distribution of Incidents", x = "Month", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Q24. Compare average FatalityRate by WeatherCondition.
+avg_fatality_weather <- crash_data %>%
+  group_by(WeatherCondition) %>%
+  summarise(AvgFatalityRate = mean(FatalityRate, na.rm = TRUE))
+ggplot(avg_fatality_weather, aes(x = WeatherCondition, y = AvgFatalityRate, fill = WeatherCondition)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Average Fatality Rate by Weather Condition", x = "Weather Condition", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+#---------------------------------- Regression-Based Questions ---------------------------------
+
+# Q25. Is there a relationship between NumberOfEngines and FatalityRate?
+model1 <- lm(FatalityRate ~ NumberOfEngines, data = crash_data)
+summary(model1)
+# Visualize Relationship Between NumberOfEngines and FatalityRate
+ggplot(crash_data, aes(x = NumberOfEngines, y = FatalityRate)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", col = "red") +
+  labs(title = "Number of Engines vs. Fatality Rate",
+       x = "Number of Engines", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+# Q26. Can we predict FatalityRate using WeatherCondition, PurposeOfFlight, and NumberOfEngines?
+model3 <- lm(FatalityRate ~ WeatherCondition + PurposeOfFlight + NumberOfEngines, data = crash_data)
+summary(model3)
+
+# Q27. Does latitude (location) influence fatality rate?
+model4 <- lm(FatalityRate ~ Latitude, data = crash_data)
+summary(model4)
+# Visualize Relationship Between Latitude and FatalityRate
+ggplot(crash_data, aes(x = Latitude, y = FatalityRate)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", col = "tomato") +
+  labs(title = "Latitude vs. Fatality Rate",
+       x = "Latitude", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+# Q28. Does the Number of Fatal, Serious, and Minor Injuries Predict the Fatality Rate?
+model2 <- lm(FatalityRate ~ FatalInjuryCount + SeriousInjuryCount + MinorInjuryCount, data = crash_data)
+summary(model2)
+# Visualize Relationship Between FatalInjuryCount and FatalityRate
+ggplot(crash_data, aes(x = FatalInjuryCount, y = FatalityRate)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", col = "red") +
+  labs(title = "Fatal Injury Count vs. Fatality Rate",
+       x = "Fatal Injury Count", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+# Q29. Can Year (from EventDate) explain variation in FatalInjuryCount?
+crash_data$Year <- as.numeric(substr(crash_data$EventDate, 1, 4))
+model5 <- lm(FatalInjuryCount ~ Year, data = crash_data) 
+summary(model5)
+# Visualize Relationship Between Year and FatalInjuryCount
+ggplot(crash_data, aes(x = Year, y = FatalInjuryCount)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", col = "blue") +
+  labs(title = "Year vs. Fatal Injury Count",
+       x = "Year", y = "Fatal Injury Count") +
+  theme_minimal()
+str(crash_data)
+
+View(crash_data)
+
+#---------------------------------- ANOVA ---------------------------------
+
+# Q30. Which aircraft category has the highest variation in FatalityRate?
+crash_data$AirCraftCategory <- as.factor(crash_data$AirCraftCategory)
+anova_model <- aov(FatalityRate ~ AirCraftCategory, data = crash_data)
+anova_results <- summary(anova_model)
+print(anova_results)
+TukeyHSD(anova_model)
+# Visualize Variation in FatalityRate by Aircraft Category
+ggplot(crash_data, aes(x = AirCraftCategory, y = FatalityRate)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.6) +
+  coord_flip() +  # Rotate for better readability
+  labs(title = "Variation of Fatality Rate by Aircraft Category",
+       x = "Aircraft Category", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+# Q31. Does WeatherCondition significantly impact FatalityRate across multiple weather categories?
+anova_model_weather <- aov(FatalityRate ~ WeatherCondition, data = crash_data)
+anova_results_weather <- summary(anova_model_weather)
+print(anova_results_weather)
+TukeyHSD(anova_model_weather)
+# Visualize Variation in FatalityRate by Weather Condition
+ggplot(crash_data, aes(x = WeatherCondition, y = FatalityRate)) +
+  geom_boxplot(fill = "lightgreen", alpha = 0.6) +
+  coord_flip() +  # Rotate for better readability
+  labs(title = "Variation of Fatality Rate by Weather Condition",
+       x = "Weather Condition", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+
+# Q32. Does PurposeOfFlight significantly impact FatalityRate across multiple flight purposes?
+table(crash_data$PurposeOfFlight)  # Quick overview of categories
+sort(table(crash_data$PurposeOfFlight), decreasing = TRUE)  # Sorted by frequency
+crash_data <- crash_data %>%
+  mutate(PurposeOfFlight_Clean = case_when(
+    str_detect(PurposeOfFlight, "PERS") ~ "Personal",
+    str_detect(PurposeOfFlight, "BUS") ~ "Business",
+    str_detect(PurposeOfFlight, "INST") ~ "Instructional",
+    str_detect(PurposeOfFlight, "POSI") ~ "Positioning",
+    str_detect(PurposeOfFlight, "FERY") ~ "Ferry",
+    str_detect(PurposeOfFlight, "AOBV|ASHO|ADRP|GLDT") ~ "Other",
+    str_detect(PurposeOfFlight, "MIL") ~ "Military",
+    str_detect(PurposeOfFlight, "PUBF|PUBL|PUBS|PUBU") ~ "Public Service",
+    str_detect(PurposeOfFlight, "SKYD") ~ "Skydiving",
+    TRUE ~ "Unknown"
+  ))
+crash_data$PurposeOfFlight_Clean <- as.factor(crash_data$PurposeOfFlight_Clean)
+anova_model_purpose <- aov(FatalityRate ~ PurposeOfFlight_Clean, data = crash_data)
+anova_results_purpose <- summary(anova_model_purpose)
+print(anova_results_purpose)
+TukeyHSD(anova_model_purpose)
+# Visualize Variation in FatalityRate by Purpose of Flight
+ggplot(crash_data, aes(x = PurposeOfFlight_Clean, y = FatalityRate)) +
+  geom_boxplot(fill = "lightcoral", alpha = 0.6) +
+  coord_flip() +  # Rotate for better readability
+  labs(title = "Variation of Fatality Rate by Purpose of Flight",
+       x = "Purpose of Flight", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+# Q33. Is there a progressive increase in FatalityRate across IncidentSeverity levels?
+crash_data$IncidentSeverity <- as.factor(crash_data$IncidentSeverity)
+anova_model_severity <- aov(FatalityRate ~ IncidentSeverity, data = crash_data)
+anova_results_severity <- summary(anova_model_severity)
+print(anova_results_severity)
+TukeyHSD(anova_model_severity)
+# Visualize Variation in FatalityRate by Incident Severity
+ggplot(crash_data, aes(x = IncidentSeverity, y = FatalityRate)) +
+  geom_boxplot(fill = "lightyellow", alpha = 0.6) +
+  coord_flip() +  # Rotate for better readability
+  labs(title = "Variation of Fatality Rate by Incident Severity",
+       x = "Incident Severity", y = "Fatality Rate (%)") +
+  theme_minimal()
+
+# Q34. Does the severity level of AirCraftDamage correlate with higher FatalityRates?
+crash_data$AirCraftDamage <- as.factor(crash_data$AirCraftDamage)
+anova_model_damage <- aov(FatalityRate ~ AirCraftDamage, data = crash_data)
+anova_results_damage <- summary(anova_model_damage)
+print(anova_results_damage)
+TukeyHSD(anova_model_damage)
+# Visualize Variation in FatalityRate by Aircraft Damage
+ggplot(crash_data, aes(x = AirCraftDamage, y = FatalityRate)) +
+  geom_boxplot(fill = "lightpink", alpha = 0.6) +
+  coord_flip() +  # Rotate for better readability
+  labs(title = "Variation of Fatality Rate by Aircraft Damage",
+       x = "Aircraft Damage", y = "Fatality Rate (%)") +
+  theme_minimal()
+
